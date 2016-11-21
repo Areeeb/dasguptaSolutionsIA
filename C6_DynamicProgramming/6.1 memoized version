@@ -1,0 +1,62 @@
+6.1. A contiguous subsequence of a list S is a subsequence made up of consecutive elements of S. For instance, if S is
+
+5 ,15 ,-30 ,10 ,-5, 40, 10
+
+then 15 ,-30 10 is a contiguous subsequence but 5, 15, 40 is not. Give a linear-time algorithm for the following task:
+
+Input: A list of numbers, a1, a2, . . . ., an.
+
+Output: The contiguous subsequence of maximum sum (a subsequence of length zerhas sum zero).
+
+For the preceding example, the answer would be 10;􀀀5; 40; 10, with a sum of 55. (Hint: For each j Ꞓ {1,2,……n}, consider contiguous subsequences ending exactly at position j.)
+
+Solution: The problem can be solved through dynamic programming.
+
+first Let us check the NAIVE APPROACH IN WHICH IT CHECKS ALL THE SUBSEQUENCES*
+
+def NaiveBruteForce(A):
+    maximum=0
+    for i in range(0, len(A)):
+        for j in range(i, len(A)):
+            summ=0
+            for k in range (i,j+1):
+                summ+=A[k]
+            if summ>maximum:
+                maximum=summ
+    return maximum
+The complexity of the naive approach is
+
+O(n^3)
+
+It can easily be solved through dynamic programming in O(n) i.e. linear time by using Kurdan algorithm.
+
+The optimal substructure here is this that 5 ,15 ,-30 ,10 ,-5, 40, 10 consider this example;
+
+Now lets say that we just want to find the max till A[:1] then max=5,, similarly for A[:2] then max=5+15=20, similarly for A[:3]; max=5+15=20. For A[:4] max=5+15=20 for A[:5]=15+5=20. We see that in previous cases the already calculated sum need not to be calculated again, we just have to check if the current element contributes to the sum if yes then we include that in the sum by adding it otherwise we just ignore it. and move forward as we did in A[:5],A[:4] similarly we also need to keep check that the we may not add to the sum in a non contigious mannner
+
+e.g.5+15+10 is WRONG
+
+Kurdan Algorithm takes care of all of these constraint while solving the problem in Linear time
+
+def max_subarray(A):
+    max_ending_here = max_so_far = A[0]
+    for x in A[1:]:
+        max_ending_here = max(x, max_ending_here + x)
+        max_so_far = max(max_so_far, max_ending_here)
+    return max_so_far
+Notice the first instruction in loop, max_ending_here will maintain the contigiousness such that non contigiousness does not occur. We see that either it will add the next value to itself or will make itself equal to the current value hence not allowing the non contigious element to be included in the answer.
+
+On the next case max_so_far takes care of whether to include the maximum sum calculated by max_ending_here or the previous one by selecting the max of it.
+
+ANALYSIS We see that the first instruction takes O(1) time the loop runs for n-1 times in each iteration it finds the maximum between two which can assumed to be done in O(1) time Hence the complexity will be
+
+O(1)+ O(n-1)+O(2) since n-1 is the dominant O(n-1)
+
+O(n)
+
+Memoization :-
+
+We can get starting and ending indices of the resulting subsequence. let's say i is our starting index and j is our ending index, so i=0, j=i+1. When the code runs, if (max_ending_here + x) gets equal to zero, it means we are starting summation now with a new point and we then make i equal to the index of x.
+Same is with j, if max_so_far > max_ending_here, then j remains unchanged but if max_so_far < max_ending here, then j = j + 1.
+In the end we will have our starting index as value of i and ending index as value of j of our maximum subsequence sum.
+
